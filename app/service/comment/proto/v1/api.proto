@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package gmicro.srv.comment;
+
+service PostCommentSrv {
+    rpc AddComment(AddCommentRequest) returns (AddCommentRespond) {}
+    rpc DelComment(DelCommentRequest) returns (DelCommentRespond) {}
+    rpc ListComment(ListCommentRequest) returns (ListCommentRespond) {}
+}
+
+message AddCommentRequest {
+    string Uid = 1;
+    int32 ArticleId = 2;
+    string Comment = 3;
+    string FromId = 4;
+    string ToId = 5;
+}
+
+message AddCommentRespond {
+    int32 Code = 1;
+}
+
+message DelCommentRequest {
+    string Uid = 1;
+    int32 ArticleId = 2;
+    int32 CommentId = 3;
+}
+
+message DelCommentRespond {
+    int32 Code = 1;
+}
+
+message ListCommentRequest {
+    string Uid = 1;
+    int32 ArticleId = 2;
+    int32 Page = 3;
+    int32 Size = 4;
+}
+
+message Comment {
+    int32 Id = 1;
+    string Comment = 2;
+    string Time = 3;
+}
+
+message ListCommentRespond {
+    int32 Count = 1;
+    map<int32,Comment> Lists = 2;    //key-文章id  value-评论
+}

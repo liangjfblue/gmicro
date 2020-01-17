@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package gmicro.srv.identify;
+
+service IdentifySrv {
+    rpc AuthMid (AuthRequest) returns (AuthResponse);
+}
+
+message AuthRequest {
+    string Token  = 1;
+}
+
+message AuthResponse {
+    string UID = 1;
+}

@@ -1,0 +1,10 @@
+runmode: debug
+name: post-srv
+
+mysql:
+  addr: 172.16.7.17:3306
+  db: db_gmicro
+  user: root
+  password: 123456
+  maxIdleConns: 10
+  maxOpenConns: 100

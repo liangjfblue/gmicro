@@ -1,0 +1,31 @@
+# go-micro
+
+## 服务
+- 用户服务
+- 发表文章服务
+- 评论服务
+- 鉴权服务
+
+
+## 编译
+进入各个微服务根目录，执行make build
+
+
+## 运行
+进入各个cmd，运行可执行文件
+
+
+## 调用方法
+- 注册用户
+
+`http://172.16.7.16:7070/v1/user/register`
+
+- 用户登录获取token
+
+`http://172.16.7.16:7070/v1/user/login`
+
+
+- 其余接口header带上Authorization（token）
+
+
+

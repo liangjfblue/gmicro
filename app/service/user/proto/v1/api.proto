@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package gmicro.srv.user;
+
+message RegisterRequest {
+	string Username = 1;
+	string Password = 2;
+	int32 Age = 3;
+	string Addr = 4;
+}
+
+message RegisterRespond {
+	int32 Code = 1;
+	string Uid = 2;
+}
+
+message LoginRequest {
+	string Username = 1;
+	string Password = 2;
+}
+
+message LoginRespond {
+	int32 Code = 1;
+	string Token = 2;
+}
+
+message InfoRequest {
+	string Uid = 1;
+}
+
+message InfoRespond {
+	string Username = 1;
+	int32 Age = 2;
+	string Addr = 3;
+}
+
+message CoinAddRequest {
+	string Uid  = 1;
+	int32 Value = 2;
+}
+
+message CoinAddResponse {
+	int32 Code = 1;
+}
+
+message CoinGetRequest {
+	string Uid  = 1;
+}
+
+message CoinGetResponse {
+	int32 Value = 1;
+}
+
+service User {
+	rpc Register(RegisterRequest) returns (RegisterRespond) {}
+	rpc Login(LoginRequest) returns (LoginRespond) {}
+	rpc Info(InfoRequest) returns (InfoRespond) {}
+
+	rpc CoinAdd(CoinAddRequest) returns (CoinAddResponse) {}
+	rpc CoinGet(CoinGetRequest) returns (CoinGetResponse) {}
+}

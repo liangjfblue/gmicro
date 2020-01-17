@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package gmicro.srv.post;
+
+service PostArticleSrv {
+    rpc PostArticle(PostArticleRequest) returns (PostArticleRespond) {}
+    rpc GetArticle(GetArticleRequest) returns (GetArticleRespond) {}
+    rpc DelArticle(DelArticleRequest) returns (DelArticleRespond) {}
+}
+
+message PostArticleRequest {
+    string Uid = 1;
+    string Title = 2;
+    string Topic = 3;
+    string Author = 4;
+    int32 IsOriginal = 5;
+    string Content = 6;
+}
+
+message PostArticleRespond {
+    int32 ArticleId = 1; //文章id
+}
+
+message GetArticleRequest {
+    string Uid = 1;
+    int32 ArticleId = 2;
+}
+
+message GetArticleRespond {
+    string Title = 1;
+    string Topic = 2;
+    string Author = 3;
+    int32 IsOriginal = 4;
+    string Content = 5;
+    string CreateTime = 6;
+    string LastUpdateTime = 7;
+}
+
+message DelArticleRequest {
+    string Uid = 1;
+    int32 ArticleId = 2;
+}
+
+message DelArticleRespond {
+    int32 Code = 1;
+}

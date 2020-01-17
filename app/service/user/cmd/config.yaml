@@ -1,0 +1,14 @@
+runmode: debug
+name: user-srv
+
+jwt:
+  key: kjf98yr293h67t
+  time: 3600
+
+mysql:
+  addr: 172.16.7.17:3306
+  db: db_gmicro
+  user: root
+  password: 123456
+  maxIdleConns: 10
+  maxOpenConns: 100
