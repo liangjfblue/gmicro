@@ -32,7 +32,7 @@ func NewServer(serviceName, serviceVersion string) *Server {
 	s.serviceVersion = serviceVersion
 
 	s.Logger = logger.NewLogger(
-		logger.LogDirName("../logs"),
+		logger.LogDirName("./logs"),
 		logger.AllowLogLevel(logger.LevelD),
 		logger.FlushInterval(time.Duration(2)*time.Second),
 	)
