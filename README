@@ -1,5 +1,7 @@
 # go-micro
 
+[![Build Status](https://travis-ci.org/liangjfblue/gmicro.svg?branch=master)](https://travis-ci.org/liangjfblue/gmicro)
+
 ## 服务
 - 用户服务
 - 发表文章服务
