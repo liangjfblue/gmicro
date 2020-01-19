@@ -2,40 +2,42 @@
 
 set -e
 
-#build
 build() {
-    #判断bin是否存在
-    if [ ! -d deployments/bin ];then
-    mkdir deployments/bin
+    if [[ ! -d deployments/bin ]];then
+        mkdir deployments/bin
     fi
-    #build
 
-    dirname=./cmd/$1
+    dirname=./app/interface/$2/cmd
     if [ -d $dirname ];then
-		for f in $dirname/$2.go; do \
-		    if [ -f $f ];then \
-		        CGO_ENABLED=0 GOOS=linux go build -mod=vendor -a -installsuffix cgo -ldflags '-w' -i -o deployments/bin/$1_$2/$1_$2 -tags $1_$2 ./cmd/$1/
+		for f in ${dirname}/main.go; do \
+		    if [ -f ${f} ];then \
+		        CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w' -i -o deployments/bin/$1/$2_$1/$2_$1 ${dirname}
                 echo build over: $1_$2; \
             fi \
 		done \
 	fi
 }
 
-#全部build
-allbuild() {
-    build api common
+buildall() {
+    #web
+    build web comment
+    build web post
+    build web user
+
+    #srv
+    build srv comment
+    build srv identify
+    build srv post
     build srv user
-    build srv account
-    build srv auth
 }
-#判断如何build
+
 case $1 in
-    allbuild) echo "全部build"
-    allbuild
+    all) echo "全部build"
+    buildall
     ;;
     build) echo "build:"$2,$3
-    if [ -z $2 -o -z $3 ];then
-    echo "参数错误"
+    if [[ -z $2 || -z $3 ]];then
+    echo "param error"
     exit 2
     fi
     build $2 $3
