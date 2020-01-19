@@ -10,10 +10,10 @@ env:
   - GO111MODULE=on
 
 before_install:
-  - chmod +x ./scripts/build.sh all
-  - chmod +x ./scripts/dockerfile.sh all
+  - chmod +x ./scripts/build.sh
+  - chmod +x ./scripts/dockerfile.sh
 
 script:
-  - ./scripts/build.sh
-  - ./scripts/dockerfile.sh
+  - ./scripts/build.sh all
+  - ./scripts/dockerfile.sh all
   - cd deployments && sudo docker-compose up
