@@ -17,7 +17,7 @@ type TBUser struct {
 	Username    string     `gorm:"column:username;type:varchar(100);unique_index" description:"账号"`
 	Password    string     `gorm:"column:password;type:varchar(80);null" description:"密码"`
 	Age         int32      `gorm:"column:age;null" description:"年龄"`
-	Address     string     `gorm:"column:address;size:type:varchar(500);null" description:"地址"`
+	Address     string     `gorm:"column:address;type:varchar(250);null" description:"地址"`
 	IsAvailable int8       `gorm:"column:is_available;null" description:"是否可用 1-可用 0-不可用" `
 	LastLogin   time.Time  `gorm:"column:last_login;type(datetime);null" description:"最后登录时间"`
 	LoginIp     string     `gorm:"column:login_ip;type:varchar(20);null" description:"登录IP"`

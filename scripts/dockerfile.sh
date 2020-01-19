@@ -2,49 +2,53 @@
 
 set -e
 
-#生成dockerfile
 gen(){
-#程序名称
-pname="$1_$2"
-#模板
-filename=./deployments/bin/"$pname"
-#判断bin是否存在
-if [ ! -d deployments/bin/"$pname" ];then
-mkdir deployments/bin/"$pname"
-fi
+    pname=$1_$2
 
-cat>$filename/Dockerfile<<EOF
-FROM alpine:3.2
-RUN set -xe && apk add --no-cache tzdata && cp -r -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-ADD $pname /$pname
-RUN chmod +x /$pname
-ENTRYPOINT [ "/$pname" ]
+    filepath=./deployments/bin/$1/${pname}
+    if [[ ! -d ${filepath} ]];then
+        mkdir -p ${filepath}
+    fi
+
+    if [[ ! -f ${filepath}/Dockerfile ]];then
+        touch ${filepath}/Dockerfile
+    fi
+
+cat>${filepath}/Dockerfile<<EOF
+FROM alpine
+COPY . .
+CMD ["./${pname}"]
 EOF
-echo "生成dockerfile$pname"
+    echo "create dockerfile $pname"
 }
 
-#全部生成dockerfile
 allgen() {
-    gen api common
+    gen web comment
+    gen web post
+    gen web user
+    gen srv comment
+    gen srv identify
+    gen srv post
     gen srv user
-    gen srv account
-    gen srv auth
 }
 
-#判断如何build
 case $1 in
-    alldf) echo "全部生成dockerfile"
+    all) echo "build all dockerfile"
     allgen
     ;;
-    df) echo "生成dockerfile:"$2,$3
-    if [ -z $2 -o -z $3 ];then
-    echo "参数错误"
-    exit 2
+    one) echo "create dockerfile:"$2,$3
+    if [[ -z $2 || -z $3 ]];then
+        echo "param error"
+        exit 2
     fi
     gen $2 $3
     ;;
     *)
-    echo "生成dockerfile error"
+    echo -e "\n\tusage: \n\n\
+\tfirst run build.sh \n\n\
+\tthen run dockerfile.sh\n\
+\t1)dockerfile.sh all\n\
+\t2)dockerfile.sh one [web/srv] [name] :make Dockerfile web common\n"
     exit 2
     ;;
 esac

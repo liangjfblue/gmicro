@@ -1,5 +1,5 @@
 端口分配
-web-comment: 7060
-web-user: 7070
-web-post: 7080
+web-comment: 7010
+web-user: 7020
+web-post: 7030
 

@@ -1,7 +1,10 @@
 package server
 
 import (
+	"strconv"
 	"time"
+
+	"github.com/liangjfblue/gmicro/app/interface/user/config"
 
 	"github.com/liangjfblue/gmicro/library/logger"
 
@@ -15,6 +18,7 @@ type Server struct {
 	serviceVersion string
 
 	Logger *logger.Logger
+	Config *config.Config
 
 	Service web.Service
 	Router  *router.Router
@@ -32,6 +36,8 @@ func NewServer(serviceName, serviceVersion string) *Server {
 		logger.FlushInterval(time.Duration(2)*time.Second),
 	)
 
+	s.Config = config.NewConfig()
+
 	s.Router = router.NewRouter(s.Logger)
 
 	return s
@@ -47,7 +53,7 @@ func (s *Server) Init() {
 	s.Service = web.NewService(
 		web.Name(s.serviceName),
 		web.Version(s.serviceVersion),
-		web.Address("172.16.7.16:7070"),
+		web.Address(":"+strconv.Itoa(s.Config.HttpConf.Port)),
 		web.RegisterTTL(time.Second*30),
 		web.RegisterInterval(time.Second*15),
 		//web.Registry(register),
