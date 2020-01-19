@@ -1,0 +1,117 @@
+version: '3'
+
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    restart: on-failure  #no  always  on-failure  unless-stopped
+    command: redis-server --appendonly yes --bind 0.0.0.0
+
+  mysql:
+    image: mysql:5.6
+    volumes:
+      - "./db/mysql_data:/var/lib/mysql"
+      - "./db/mysql_init:/docker-entrypoint-initdb.d/"
+    restart: on-failure
+    environment:
+      LANG: C.UTF-8
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: db_gmicro
+      MYSQL_USER: liangjf
+      MYSQL_PASSWORD: 123456
+    ports:
+      - "3306:3306"
+
+  #web api
+  web_comment:
+    build:
+      context: ./bin/web/web_comment
+      dockerfile: Dockerfile
+    ports:
+      - "7010:7010"
+    restart: on-failure
+    depends_on:
+      - srv_comment
+      - srv_identify
+      - srv_post
+      - srv_user
+
+  web_post:
+    build:
+      context: ./bin/web/web_post
+      dockerfile: Dockerfile
+    ports:
+      - "7030:7030"
+    restart: on-failure
+    depends_on:
+      - srv_comment
+      - srv_identify
+      - srv_post
+      - srv_user
+
+  web_user:
+    build:
+      context: ./bin/web/web_user
+      dockerfile: Dockerfile
+    ports:
+      - "7020:7020"
+    restart: on-failure
+    depends_on:
+      - srv_comment
+      - srv_identify
+      - srv_post
+      - srv_user
+
+  #服务
+  srv_comment:
+    build:
+      context: ./bin/srv/srv_comment
+      dockerfile: Dockerfile
+    restart: on-failure
+    links:
+      - mysql:mysql-server
+      - redis:redis-server
+    depends_on:
+      - mysql
+      - redis
+
+  srv_identify:
+    build:
+      context: ./bin/srv/srv_identify
+      dockerfile: Dockerfile
+    restart: on-failure
+    links:
+      - mysql:mysql-server
+      - redis:redis-server
+    depends_on:
+      - mysql
+      - redis
+
+  srv_post:
+    build:
+      context: ./bin/srv/srv_post
+      dockerfile: Dockerfile
+    restart: on-failure
+    links:
+      - mysql:mysql-server
+      - redis:redis-server
+    depends_on:
+      - mysql
+      - redis
+
+  srv_user:
+    build:
+      context: ./bin/srv/srv_user
+      dockerfile: Dockerfile
+    restart: on-failure
+    links:
+      - mysql:mysql-server
+      - redis:redis-server
+    depends_on:
+      - mysql
+      - redis
+
+
+
+

@@ -7,15 +7,25 @@
 - 鉴权服务
 
 
-## 编译
-进入各个微服务根目录，执行make build
+## 1、编译
+./scripts/build.sh all
 
 
-## 运行
-进入各个cmd，运行可执行文件
+## 2、生成Dockerfile
+./scripts/dockerfile.sh all
 
 
-## 调用方法
+## 3、运行
+创建deployments/db/mysql_data目录
+
+## 3.1、运行
+进入deployments目录: `sudo docker-compose up`
+
+## 3.2、停止
+进入deployments目录: `sudo docker-compose down`
+
+
+## 4、调用方法
 - 注册用户
 
 `http://172.16.7.16:7070/v1/user/register`
