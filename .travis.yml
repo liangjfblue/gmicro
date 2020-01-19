@@ -16,4 +16,4 @@ before_install:
 script:
   - ./scripts/build.sh all
   - ./scripts/dockerfile.sh all
-  - cd deployments && sudo docker-compose up
+  #- cd deployments && sudo docker-compose up
