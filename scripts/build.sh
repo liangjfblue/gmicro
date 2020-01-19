@@ -17,6 +17,10 @@ build() {
     if [ -d $buildDir ];then
 		for f in ${buildDir}/main.go; do \
 		    if [[ -f ${f} ]];then \
+		        if [[ ! -d ${BUILD_HOME}/$1/$1_$2 ]];then
+                    mkdir -p ${BUILD_HOME}/$1/$1_$2
+                fi
+
 		        cp ${buildDir}/config.yaml ${BUILD_HOME}/$1/$1_$2
 		        CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w' -i -o ${BUILD_HOME}/$1/$1_$2/$1_$2 ${buildDir}
                 echo build over: $1_$2; \
