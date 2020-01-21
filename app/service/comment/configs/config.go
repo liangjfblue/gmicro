@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	MysqlConf *MysqlConfig
+	MysqlConf   *MysqlConfig
+	CommentConf *CommentConfig
 }
 
 type MysqlConfig struct {
@@ -19,6 +20,10 @@ type MysqlConfig struct {
 	MaxOpenConns int
 }
 
+type CommentConfig struct {
+	AddCoin int
+}
+
 func NewConfig() *Config {
 	return &Config{
 		MysqlConf: &MysqlConfig{
@@ -28,6 +33,9 @@ func NewConfig() *Config {
 			Password:     viper.GetString("mysql.password"),
 			MaxIdleConns: viper.GetInt("mysql.maxIdleConns"),
 			MaxOpenConns: viper.GetInt("mysql.maxOpenConns"),
+		},
+		CommentConf: &CommentConfig{
+			AddCoin: viper.GetInt("comment.addcoin"),
 		},
 	}
 }

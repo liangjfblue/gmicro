@@ -3,6 +3,8 @@ package router
 import (
 	"net/http"
 
+	"github.com/liangjfblue/gmicro/library/http/middleware/trace"
+
 	"github.com/liangjfblue/gmicro/app/interface/comment/controllers"
 	"github.com/liangjfblue/gmicro/app/interface/comment/service"
 	"github.com/liangjfblue/gmicro/library/logger"
@@ -37,7 +39,7 @@ func (r *Router) initRouter() {
 	handles := controllers.NewHandles(r.Logger, srv)
 
 	c := r.G.Group("/v1/comment")
-	c.Use(srv.AuthMid.AuthMid())
+	c.Use(trace.OpenTracingMid(), srv.AuthMid.AuthMid())
 	{
 		c.POST("/add", handles.CommentHandle.Add)
 		c.DELETE("/:cid", handles.CommentHandle.Del)

@@ -1,8 +1,12 @@
 package article
 
 import (
+	"context"
 	"errors"
 	"strconv"
+
+	"github.com/liangjfblue/gmicro/library/config"
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
 
 	"github.com/liangjfblue/gmicro/library/pkg/errno"
 
@@ -17,6 +21,22 @@ func (a *ArticleHandle) Del(c *gin.Context) {
 		result handle.Result
 		req    models.DelArticleRequest
 	)
+
+	//tracer
+	cc, exist := c.Get(config.Conf.TraceConf.TraceContext)
+	if !exist {
+		a.Logger.Error("no TraceContext")
+		result.Failure(c, errno.ErrTraceNoContext)
+		return
+	}
+	ctx := cc.(context.Context)
+	ctx, span, err := tracer.TraceIntoContext(ctx, "WebArticleDel")
+	if err != nil {
+		a.Logger.Error("web coin err: %s", err.Error())
+		result.Failure(c, errno.ErrTraceIntoContext)
+		return
+	}
+	defer span.Finish()
 
 	uid, ok := c.Get("uid")
 	if !ok {
@@ -36,7 +56,7 @@ func (a *ArticleHandle) Del(c *gin.Context) {
 
 	req.Uid = uid.(string)
 
-	resp, err := a.Srv.ArticleSrv.Del(c, &req)
+	resp, err := a.Srv.ArticleSrv.Del(ctx, &req)
 	if err != nil {
 		a.Logger.Error("web post del err: %s", err.Error())
 		result.Failure(c, err)

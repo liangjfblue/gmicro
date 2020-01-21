@@ -5,6 +5,7 @@ import (
 
 	"github.com/liangjfblue/gmicro/app/interface/post/controllers"
 	"github.com/liangjfblue/gmicro/app/interface/post/service"
+	"github.com/liangjfblue/gmicro/library/http/middleware/trace"
 	"github.com/liangjfblue/gmicro/library/logger"
 
 	"github.com/gin-gonic/gin"
@@ -37,7 +38,7 @@ func (r *Router) initRouter() {
 	handles := controllers.NewHandles(r.Logger, srv)
 
 	u := r.G.Group("/v1/post/article")
-	u.Use(srv.AuthMid.AuthMid())
+	u.Use(trace.OpenTracingMid(), srv.AuthMid.AuthMid())
 	{
 		u.POST("/post", handles.ArticleHandle.Post)
 		u.GET("/:aid", handles.ArticleHandle.Get)

@@ -23,11 +23,28 @@ services:
     ports:
       - "3306:3306"
 
+  jaeger:
+    image: jaegertracing/all-in-one:1.7
+    restart: on-failure
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+
   #web api
   web_comment:
     build:
       context: ./bin/web/web_comment
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
+      CONFIGOR_MYSQL_ADDR: mysql-server:3306
+    links:
+      - jaeger
     ports:
       - "7010:7010"
     restart: on-failure
@@ -41,6 +58,11 @@ services:
     build:
       context: ./bin/web/web_post
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
+      CONFIGOR_MYSQL_ADDR: mysql-server:3306
+    links:
+      - jaeger
     ports:
       - "7030:7030"
     restart: on-failure
@@ -54,6 +76,11 @@ services:
     build:
       context: ./bin/web/web_user
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
+      CONFIGOR_MYSQL_ADDR: mysql-server:3306
+    links:
+      - jaeger
     ports:
       - "7020:7020"
     restart: on-failure
@@ -68,49 +95,67 @@ services:
     build:
       context: ./bin/srv/srv_comment
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
+      CONFIGOR_MYSQL_ADDR: mysql-server:3306
     restart: on-failure
     links:
       - mysql:mysql-server
       - redis:redis-server
+      - jaeger
     depends_on:
       - mysql
       - redis
+      - jaeger
 
   srv_identify:
     build:
       context: ./bin/srv/srv_identify
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
     restart: on-failure
     links:
       - mysql:mysql-server
       - redis:redis-server
+      - jaeger
     depends_on:
       - mysql
       - redis
+      - jaeger
 
   srv_post:
     build:
       context: ./bin/srv/srv_post
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
     restart: on-failure
     links:
       - mysql:mysql-server
       - redis:redis-server
+      - jaeger
     depends_on:
       - mysql
       - redis
+      - jaeger
 
   srv_user:
     build:
       context: ./bin/srv/srv_user
       dockerfile: Dockerfile
+    environment:
+      CONFIGOR_TRACE_ADDRESS: jaeger:6831
+      CONFIGOR_MYSQL_ADDR: mysql-server:3306
     restart: on-failure
     links:
       - mysql:mysql-server
       - redis:redis-server
+      - jaeger:jaeger-server
     depends_on:
       - mysql
       - redis
+      - jaeger
 
 
 

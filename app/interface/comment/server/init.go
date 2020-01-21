@@ -5,6 +5,10 @@ import (
 	"strconv"
 	"time"
 
+	config2 "github.com/liangjfblue/gmicro/library/config"
+
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
+
 	"github.com/liangjfblue/gmicro/app/interface/comment/config"
 
 	"github.com/liangjfblue/gmicro/library/logger"
@@ -23,6 +27,8 @@ type Server struct {
 
 	Service web.Service
 	Router  *router.Router
+
+	Tracer *tracer.Tracer
 }
 
 func NewServer(serviceName, serviceVersion string) *Server {
@@ -41,11 +47,15 @@ func NewServer(serviceName, serviceVersion string) *Server {
 
 	s.Router = router.NewRouter(s.Logger)
 
+	s.Tracer = tracer.New(s.Logger, config2.Conf.TraceConf.Addr, s.serviceName)
+
 	return s
 }
 
 func (s *Server) Init() {
 	s.Logger.Init()
+
+	s.Tracer.Init()
 
 	//register := etcdv3.NewRegistry(
 	//	registry.Addrs("172.16.7.16:9002", "172.16.7.16:9004", "172.16.7.16:9006"),
@@ -71,6 +81,11 @@ func (s *Server) Init() {
 }
 
 func (s *Server) Run() {
+	defer func() {
+		s.Logger.Info("web comment close, clean and close something")
+		s.Tracer.Close()
+	}()
+
 	s.Logger.Debug("web comment server run")
 	if err := s.Service.Run(); err != nil {
 		fmt.Println(err.Error())

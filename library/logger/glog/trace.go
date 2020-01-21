@@ -14,13 +14,13 @@ type traceLocation struct {
 	logger *LoggingT
 }
 
-// isSet reports whether the trace location has been specified.
+// isSet reports whether the tracer location has been specified.
 // logging.mu is held.
 func (t *traceLocation) isSet() bool {
 	return t.line > 0
 }
 
-// match reports whether the specified file and line matches the trace location.
+// match reports whether the specified file and line matches the tracer location.
 // The argument file name is the full path, not the basename specified in the flag.
 // logging.mu is held.
 func (t *traceLocation) match(file string, line int) bool {
