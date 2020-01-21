@@ -3,6 +3,8 @@ package router
 import (
 	"net/http"
 
+	"github.com/liangjfblue/gmicro/library/http/middleware/trace"
+
 	"github.com/liangjfblue/gmicro/app/interface/user/controllers"
 	"github.com/liangjfblue/gmicro/app/interface/user/service"
 	"github.com/liangjfblue/gmicro/library/logger"
@@ -36,7 +38,7 @@ func (r *Router) initRouter() {
 	handles := controllers.NewHandles(r.Logger, srv)
 
 	u := r.G.Group("/v1/user")
-	u.Use()
+	u.Use(trace.OpenTracingMid())
 	{
 		u.POST("/register", handles.UserHandle.Register)
 		u.POST("/login", handles.UserHandle.Login)
@@ -48,7 +50,7 @@ func (r *Router) initRouter() {
 	}
 
 	c := r.G.Group("/v1/coin")
-	c.Use(srv.AuthMid.AuthMid())
+	c.Use(trace.OpenTracingMid(), srv.AuthMid.AuthMid())
 	{
 		c.GET("/get", handles.CoinHandle.Get)
 		c.POST("/add", handles.CoinHandle.Add)

@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	userv1 "github.com/liangjfblue/gmicro/app/service/user/proto/v1"
+
 	"github.com/liangjfblue/gmicro/app/service/comment/model"
 	"github.com/liangjfblue/gmicro/library/pkg/errno"
 	"github.com/pkg/errors"
@@ -38,7 +40,17 @@ func (c *Service) AddComment(ctx context.Context, in *commentv1.AddCommentReques
 		return errors.Wrap(err, " service comment")
 	}
 
-	out.Code = errno.Success.Code
+	//add coin
+	resp2, err := c.userSrvClient.CoinAdd(ctx, &userv1.CoinAddRequest{
+		Uid:   in.Uid,
+		Value: int32(c.Config.CommentConf.AddCoin),
+	})
+	if err != nil {
+		c.Logger.Error("service comment: %s", err.Error())
+		return errors.Wrap(err, " service comment")
+	}
+
+	out.Code = resp2.Code
 
 	return nil
 }

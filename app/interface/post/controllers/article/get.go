@@ -1,10 +1,14 @@
 package article
 
 import (
+	"context"
 	"errors"
 	"strconv"
 
+	"github.com/liangjfblue/gmicro/library/config"
+
 	"github.com/liangjfblue/gmicro/library/pkg/errno"
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liangjfblue/gmicro/app/interface/post/models"
@@ -17,6 +21,22 @@ func (a *ArticleHandle) Get(c *gin.Context) {
 		result handle.Result
 		req    models.GetArticleRequest
 	)
+
+	//tracer
+	cc, exist := c.Get(config.Conf.TraceConf.TraceContext)
+	if !exist {
+		a.Logger.Error("no TraceContext")
+		result.Failure(c, errno.ErrTraceNoContext)
+		return
+	}
+	ctx := cc.(context.Context)
+	ctx, span, err := tracer.TraceIntoContext(ctx, "WebArticleGet")
+	if err != nil {
+		a.Logger.Error("web coin err: %s", err.Error())
+		result.Failure(c, errno.ErrTraceIntoContext)
+		return
+	}
+	defer span.Finish()
 
 	uid, ok := c.Get("uid")
 	if !ok {
@@ -36,7 +56,7 @@ func (a *ArticleHandle) Get(c *gin.Context) {
 		return
 	}
 
-	resp, err := a.Srv.ArticleSrv.Get(c, &req)
+	resp, err := a.Srv.ArticleSrv.Get(ctx, &req)
 	if err != nil {
 		a.Logger.Error("web post get err: %s", err.Error())
 		result.Failure(c, err)

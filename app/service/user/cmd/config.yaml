@@ -6,7 +6,7 @@ jwt:
   time: 3600
 
 mysql:
-  addr: mysql-server:3306
+  addr: 172.16.7.17:3306
   db: db_gmicro
   user: liangjf
   password: 123456
