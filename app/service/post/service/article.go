@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 
+	userv1 "github.com/liangjfblue/gmicro/app/service/user/proto/v1"
+
 	"github.com/liangjfblue/gmicro/library/pkg/errno"
 
 	"github.com/liangjfblue/gmicro/app/service/post/model"
@@ -53,6 +55,15 @@ func (c *Service) PostArticle(ctx context.Context, in *v1.PostArticleRequest, ou
 	}
 
 	tx.Commit()
+
+	//add coin
+	if _, err = c.userSrvClient.CoinAdd(ctx, &userv1.CoinAddRequest{
+		Uid:   in.Uid,
+		Value: int32(c.Config.CommentConf.AddCoin),
+	}); err != nil {
+		c.Logger.Error("service post: %s", err.Error())
+		return errors.Wrap(err, " service post")
+	}
 
 	out.ArticleId = int32(article.ID)
 

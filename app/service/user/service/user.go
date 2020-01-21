@@ -58,7 +58,7 @@ func (s *Service) Register(ctx context.Context, in *v1.RegisterRequest, out *v1.
 	//coin new record
 	money := model.TBMoney{
 		Uid:  user.Uid,
-		Coin: 0,
+		Coin: 10,
 	}
 
 	if err := money.Create(); err != nil {

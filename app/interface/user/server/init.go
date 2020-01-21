@@ -4,6 +4,9 @@ import (
 	"strconv"
 	"time"
 
+	config2 "github.com/liangjfblue/gmicro/library/config"
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
+
 	"github.com/liangjfblue/gmicro/app/interface/user/config"
 
 	"github.com/liangjfblue/gmicro/library/logger"
@@ -22,6 +25,8 @@ type Server struct {
 
 	Service web.Service
 	Router  *router.Router
+
+	Tracer *tracer.Tracer
 }
 
 func NewServer(serviceName, serviceVersion string) *Server {
@@ -40,11 +45,15 @@ func NewServer(serviceName, serviceVersion string) *Server {
 
 	s.Router = router.NewRouter(s.Logger)
 
+	s.Tracer = tracer.New(s.Logger, config2.Conf.TraceConf.Addr, s.serviceName)
+
 	return s
 }
 
 func (s *Server) Init() {
 	s.Logger.Init()
+
+	s.Tracer.Init()
 
 	//register := etcdv3.NewRegistry(
 	//	registry.Addrs("172.16.7.16:9002", "172.16.7.16:9004", "172.16.7.16:9006"),
@@ -70,9 +79,14 @@ func (s *Server) Init() {
 }
 
 func (s *Server) Run() {
-	s.Logger.Info("web post server run")
+	defer func() {
+		s.Logger.Info("web user close, clean and close something")
+		s.Tracer.Close()
+	}()
+
+	s.Logger.Info("web user server run")
 	if err := s.Service.Run(); err != nil {
-		s.Logger.Error("web post err: %s", err.Error())
+		s.Logger.Error("web user err: %s", err.Error())
 		return
 	}
 }

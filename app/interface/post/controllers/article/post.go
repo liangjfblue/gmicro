@@ -1,7 +1,11 @@
 package article
 
 import (
+	"context"
 	"errors"
+
+	"github.com/liangjfblue/gmicro/library/config"
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liangjfblue/gmicro/app/interface/post/models"
@@ -15,6 +19,22 @@ func (a *ArticleHandle) Post(c *gin.Context) {
 		result handle.Result
 		req    models.PostArticleRequest
 	)
+
+	//tracer
+	cc, exist := c.Get(config.Conf.TraceConf.TraceContext)
+	if !exist {
+		a.Logger.Error("no TraceContext")
+		result.Failure(c, errno.ErrTraceNoContext)
+		return
+	}
+	ctx := cc.(context.Context)
+	ctx, span, err := tracer.TraceIntoContext(ctx, "WebArticlePost")
+	if err != nil {
+		a.Logger.Error("web coin err: %s", err.Error())
+		result.Failure(c, errno.ErrTraceIntoContext)
+		return
+	}
+	defer span.Finish()
 
 	uid, ok := c.Get("uid")
 	if !ok {
@@ -31,7 +51,7 @@ func (a *ArticleHandle) Post(c *gin.Context) {
 
 	req.Uid = uid.(string)
 
-	resp, err := a.Srv.ArticleSrv.Post(c, &req)
+	resp, err := a.Srv.ArticleSrv.Post(ctx, &req)
 	if err != nil {
 		a.Logger.Error("web post post err: %s", err.Error())
 		result.Failure(c, err)

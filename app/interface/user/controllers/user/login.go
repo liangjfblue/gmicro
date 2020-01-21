@@ -1,9 +1,12 @@
 package user
 
 import (
+	"context"
 	"fmt"
 
+	"github.com/liangjfblue/gmicro/library/config"
 	"github.com/liangjfblue/gmicro/library/pkg/errno"
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liangjfblue/gmicro/app/interface/user/models"
@@ -17,6 +20,22 @@ func (u *UserHandle) Login(c *gin.Context) {
 		req    models.LoginRequest
 	)
 
+	//tracer
+	cc, exist := c.Get(config.Conf.TraceConf.TraceContext)
+	if !exist {
+		u.Logger.Error("no TraceContext")
+		result.Failure(c, errno.ErrTraceNoContext)
+		return
+	}
+	ctx := cc.(context.Context)
+	ctx, span, err := tracer.TraceIntoContext(ctx, "WebUserLogin")
+	if err != nil {
+		u.Logger.Error("web user err: %s", err.Error())
+		result.Failure(c, errno.ErrTraceIntoContext)
+		return
+	}
+	defer span.Finish()
+
 	if err = c.BindJSON(&req); err != nil {
 		u.Logger.Error("web user Login err: %s", err.Error())
 		result.Failure(c, errno.ErrBind)
@@ -29,7 +48,7 @@ func (u *UserHandle) Login(c *gin.Context) {
 		return
 	}
 
-	resp, err := u.Srv.UserSrv.Login(c, &req)
+	resp, err := u.Srv.UserSrv.Login(ctx, &req)
 	if err != nil {
 		u.Logger.Error("web user Login err: %s", err.Error())
 		result.Failure(c, err)

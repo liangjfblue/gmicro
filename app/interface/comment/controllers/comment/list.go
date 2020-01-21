@@ -1,7 +1,11 @@
 package comment
 
 import (
+	"context"
 	"errors"
+
+	"github.com/liangjfblue/gmicro/library/config"
+	"github.com/liangjfblue/gmicro/library/pkg/tracer"
 
 	"github.com/gin-gonic/gin"
 	"github.com/liangjfblue/gmicro/app/interface/comment/models"
@@ -15,6 +19,22 @@ func (m *CommentHandle) List(c *gin.Context) {
 		result handle.Result
 		req    models.ListCommentRequest
 	)
+
+	//tracer
+	cc, exist := c.Get(config.Conf.TraceConf.TraceContext)
+	if !exist {
+		m.Logger.Error("no TraceContext")
+		result.Failure(c, errno.ErrTraceNoContext)
+		return
+	}
+	ctx := cc.(context.Context)
+	ctx, span, err := tracer.TraceIntoContext(ctx, "WebCommentList")
+	if err != nil {
+		m.Logger.Error("web coin err: %s", err.Error())
+		result.Failure(c, errno.ErrTraceIntoContext)
+		return
+	}
+	defer span.Finish()
 
 	uid, ok := c.Get("uid")
 	if !ok {
@@ -37,7 +57,7 @@ func (m *CommentHandle) List(c *gin.Context) {
 		return
 	}
 
-	resp, err := m.Srv.CommentSrv.List(c, &req)
+	resp, err := m.Srv.CommentSrv.List(ctx, &req)
 	if err != nil {
 		m.Logger.Error("web comment list err: %s", err.Error())
 		result.Failure(c, err)

@@ -311,18 +311,18 @@ func TestLogBacktraceAt(t *testing.T) {
 		// Start of tracing block. These lines know about each other's relative position.
 		_, file, line, ok := runtime.Caller(0)
 		setTraceLocation(file, line, ok, +2) // Two lines between Caller and Info calls.
-		Info("we want a stack trace here")
+		Info("we want a stack tracer here")
 	}
 	numAppearances := strings.Count(contents(infoLog), infoLine)
 	if numAppearances < 2 {
-		// Need 2 appearances, one in the log header and one in the trace:
-		//   log_test.go:281: I0511 16:36:06.952398 02238 log_test.go:280] we want a stack trace here
+		// Need 2 appearances, one in the log header and one in the tracer:
+		//   log_test.go:281: I0511 16:36:06.952398 02238 log_test.go:280] we want a stack tracer here
 		//   ...
 		//   github.com/glog/glog_test.go:280 (0x41ba91)
 		//   ...
 		// We could be more precise but that would require knowing the details
 		// of the traceback format, which may not be dependable.
-		t.Fatal("got no trace back; log is ", contents(infoLog))
+		t.Fatal("got no tracer back; log is ", contents(infoLog))
 	}
 }
 

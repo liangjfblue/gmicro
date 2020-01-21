@@ -48,7 +48,7 @@
 //		When set to a file and line number holding a logging statement,
 //		such as
 //			-log_backtrace_at=gopherflakes.go:234
-//		a stack trace will be written to the Info log whenever execution
+//		a stack tracer will be written to the Info log whenever execution
 //		hits that statement. (Unlike with -vmodule, the ".go" must be
 //		present.)
 package glog
@@ -471,13 +471,13 @@ func (l *LoggingT) output(s Severity, buf *buffer, file string, line int, alsoTo
 			os.Exit(1)
 		}
 		// Dump all goroutine stacks before exiting.
-		// First, make sure we see the trace for the current goroutine on standard error.
+		// First, make sure we see the tracer for the current goroutine on standard error.
 		// If -logtostderr has been specified, the loop below will do that anyway
 		// as the first stack in the full dump.
 		if !l.toStderr {
 			os.Stderr.Write(stacks(false))
 		}
-		// Write the stack trace for all goroutines to the files.
+		// Write the stack tracer for all goroutines to the files.
 		trace := stacks(true)
 		logExitFunc = func(error) {} // If we get a write error, we'll still exit below.
 		for log := fatalLog; log >= debugLog; log-- {
@@ -846,14 +846,14 @@ func (l *Logger) Errorf(format string, args ...interface{}) {
 }
 
 // Fatal logs to the FATAL, ERROR, WARNING, and INFO logs,
-// including a stack trace of all running goroutines, then calls os.Exit(255).
+// including a stack tracer of all running goroutines, then calls os.Exit(255).
 // Arguments are handled in the manner of fmt.Print; a newline is appended if missing.
 func Fatal(args ...interface{}) {
 	logging.print(fatalLog, args...)
 }
 
 // Fatal logs to the FATAL, ERROR, WARNING, and INFO logs,
-// including a stack trace of all running goroutines, then calls os.Exit(255).
+// including a stack tracer of all running goroutines, then calls os.Exit(255).
 // Arguments are handled in the manner of fmt.Print; a newline is appended if missing.
 func (l *Logger) Fatal(args ...interface{}) {
 	l.l.print(fatalLog, args...)
@@ -872,28 +872,28 @@ func (l *Logger) FatalDepth(depth int, args ...interface{}) {
 }
 
 // Fatalln logs to the FATAL, ERROR, WARNING, and INFO logs,
-// including a stack trace of all running goroutines, then calls os.Exit(255).
+// including a stack tracer of all running goroutines, then calls os.Exit(255).
 // Arguments are handled in the manner of fmt.Println; a newline is appended if missing.
 func Fatalln(args ...interface{}) {
 	logging.println(fatalLog, args...)
 }
 
 // Fatalln logs to the FATAL, ERROR, WARNING, and INFO logs,
-// including a stack trace of all running goroutines, then calls os.Exit(255).
+// including a stack tracer of all running goroutines, then calls os.Exit(255).
 // Arguments are handled in the manner of fmt.Println; a newline is appended if missing.
 func (l *Logger) Fatalln(args ...interface{}) {
 	l.l.println(fatalLog, args...)
 }
 
 // Fatalf logs to the FATAL, ERROR, WARNING, and INFO logs,
-// including a stack trace of all running goroutines, then calls os.Exit(255).
+// including a stack tracer of all running goroutines, then calls os.Exit(255).
 // Arguments are handled in the manner of fmt.Printf; a newline is appended if missing.
 func Fatalf(format string, args ...interface{}) {
 	logging.printf(fatalLog, format, args...)
 }
 
 // Fatalf logs to the FATAL, ERROR, WARNING, and INFO logs,
-// including a stack trace of all running goroutines, then calls os.Exit(255).
+// including a stack tracer of all running goroutines, then calls os.Exit(255).
 // Arguments are handled in the manner of fmt.Printf; a newline is appended if missing.
 func (l *Logger) Fatalf(format string, args ...interface{}) {
 	l.l.printf(fatalLog, format, args...)

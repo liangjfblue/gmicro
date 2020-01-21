@@ -8,3 +8,6 @@ mysql:
   password: 123456
   maxIdleConns: 10
   maxOpenConns: 100
+
+comment:
+  addcoin: 5
