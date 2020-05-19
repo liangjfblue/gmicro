@@ -33,15 +33,22 @@
 ## 4、调用方法
 - 注册用户
 
-`http://172.16.7.16:7070/v1/user/register`
+`http://172.16.7.16:7020/v1/user/register`
 
 - 用户登录获取token
 
-`http://172.16.7.16:7070/v1/user/login`
+`http://172.16.7.16:7020/v1/user/login`
 
 
 - 其余接口header带上Authorization（token）
 
+- comment: `DELETE /v1/comment/:cid`
+- comment: `GET    /v1/comment/list`
+- user:    `POST   /v1/user/register`
+- user:    `POST   /v1/user/login`
+- user:    `GET    /v1/user/info`
+- user:    `GET    /v1/coin/get`
+- user:    `POST   /v1/coin/add`
 
 ## 5、分布式链路追踪
 - opentracing
